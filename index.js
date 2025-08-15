@@ -1,61 +1,62 @@
-const dragon = 'https://dragonball-api.com/api/characters'
+const baseUrl = 'https://dragonball-api.com/api/characters';
+let currentPage = 1;
+const limit = 10;
 
 const dragonball = document.getElementById("dragonball");
+const nextBtn = document.getElementById("nextPage");
+const prevBtn = document.getElementById("prevPage");
 
 function showData(dataArray) {
-    // El for itera sobre los elementos del array
-    for (const item of dataArray) {
-
-      let cardDiv = document.createElement('div');
-      cardDiv.className = "cardDragon";
-      cardDiv.innerHTML += `
-      <img src= "${item.image}" alt= "${item.description}">
-      <p class="nombre"> ${item.name} </p>
-      <p class="ki"> Ki: ${item.ki} </p>
-      <p class="maxki"> MaxKi: ${item.maxKi} </p>   
-      <p class="race"> Race: ${item.race} </p> 
-      <p class="gender"> Gender: ${item.gender} </p>
-      <p class="description"> Description: ${item.description} </p>
-      <p class="afilliation"> Affiliation: ${item.affiliation} </p>
-    
-      `; // Se concatena cada párrafo de la manera que queremos mostrarlo al innerHTML del contenedor
-
-      // Añadir la tarjeta al contenedor principal
+  dragonball.innerHTML = ""; // Limpia el contenido anterior
+  for (const item of dataArray) {
+    let cardDiv = document.createElement('div');
+    cardDiv.className = "cardDragon";
+    cardDiv.innerHTML = `
+      <img src="${item.image}" alt="${item.description}">
+      <p class="nombre">${item.name}</p>
+      <p class="ki">Ki: ${item.ki}</p>
+      <p class="maxki">MaxKi: ${item.maxKi}</p>
+      <p class="race">Race: ${item.race}</p>
+      <p class="gender">Gender: ${item.gender}</p>
+      <p class="description">Description: ${item.description}</p>
+      <p class="affiliation">Affiliation: ${item.affiliation}</p>
+    `;
     dragonball.appendChild(cardDiv);
+  }
 }
-};
 
+function loadPage(page) {
+  fetch(`${baseUrl}?page=${page}&limit=${limit}`)
+    .then(res => res.ok ? res.json() : Promise.reject(res))
+    .then(data => {
+      console.log(data);
+      showData(data.items);
+    })
+    .catch(err => {
+      console.error(err);
+      let message = err.statusText || "Ocurrió un error";
+      dragonball.innerHTML = `<p>Error ${err.status || ''}: ${message}</p>`;
+    })
+    .finally(() => {
+      console.log(`Página ${page} cargada.`);
+    });
+}
 
-fetch(dragon)
-.then((res) =>{
-console.log(res);
-return res.ok? res.json(): Promise.reject(res); //esto hace que: si la respuesta es ok manda un rest.json y sino rechaza la promesa
-})
-.then(data => {
-// Acceso al array products dentro de data 
-const items = data.items;
-console.log(items);
-showData(items); // Paso products array para la funcion showData
-})
-.catch((err) => {
-console.log(err);
-let message = err.statusText || "Ocurrió un error";
-dragonball.innerHTML = `<p>Error ${err.status}: ${message}</p>`;
-})
-.finally(() => 
-console.log('Operación de fetch completada.'));
+// Botón siguiente
+nextBtn.addEventListener("click", () => {
+  currentPage++;
+  loadPage(currentPage);
+});
 
+// Botón anterior
+prevBtn.addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    loadPage(currentPage);
+  }
+});
 
-
-//EJEMPLO BÁSICO DE FETCH
-
-fetch("https://api.example.com/usuarios/1")
-  .then(res => res.json()) // convierte el JSON a objeto JS
-  .then(data => {
-    console.log(data.nombre); // usa el dato
-  });
-
-
-
+// Cargar la primera página al inicio
+loadPage(currentPage);
 
 
