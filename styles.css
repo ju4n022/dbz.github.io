@@ -112,21 +112,7 @@ body {
     }
 }
 
-#prevPage, 
-#nextPage {
-    position: fixed; /* Siempre visibles */
-    top: 50%; /* Centrado vertical */
-    transform: translateY(-50%);
-    padding: 10px 20px;
-    background-color: #5800a5;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    cursor: pointer;
-    z-index: 1000; /* Que queden por encima de las cartas */
-    transition: background-color 0.3s;
-}
+
 
 #prevPage, 
 #nextPage {
@@ -156,5 +142,6 @@ body {
 #nextPage {
     right: 20px; /* A la derecha */
 }
+
 
 
